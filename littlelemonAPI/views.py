@@ -2,10 +2,10 @@ from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from rest_framework.response import Response
 from rest_framework import status, viewsets
-from config.permissions import MenuItemsPermissions,ManageGroupPermissions, CartPermissions, OrderPermissions
+from config.permissions import MenuItemsPermissions,ManageGroupPermissions, CartPermissions, OrderPermissions, CategoryPermissions
 from django.contrib.auth.models import User, Group
-from littlelemonAPI.models import MenuItem, Cart, Order
-from littlelemonAPI.serializers import MenuItemSerializer, DeliveryCrewSerializer, ManagerSerializer, CartSerializer, OrderSerializer, OrderItemSerializer
+from littlelemonAPI.models import MenuItem, Cart, Order, Category
+from littlelemonAPI.serializers import MenuItemSerializer, DeliveryCrewSerializer, ManagerSerializer, CartSerializer, OrderSerializer, CategorySerializer
 # Create your views here.
 class MenuItemViewSet(viewsets.ViewSet):
     permission_classes = [MenuItemsPermissions]
@@ -229,3 +229,51 @@ class OrderViewSet(viewsets.ViewSet):
                 return Response({'error': 'You do not have permission to delete this order'}, status=status.HTTP_401_UNAUTHORIZED)                 
         except Order.DoesNotExist:
             return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+class CategoryViewSet(viewsets.ViewSet):
+    permission_classes = [CategoryPermissions]
+    
+    def list(self, request, *args, **kwargs):
+        query_set = Category.objects.all()
+        serializer = CategorySerializer(query_set, many=True)
+        return Response(serializer.data)
+    
+    def create(self, request, *args, **kwargs):
+        # Check if a category with the same title already exists
+        query_set = Category.objects.filter(title=request.data.get('title'))
+        if query_set.exists():
+            return Response({'error': 'Category with the same title already exists'}, status=status.HTTP_400_BAD_REQUEST)
+        serializer = CategorySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def retrieve(self, request, pk, *args, **kwargs):
+        try:
+            category = Category.objects.get(pk=pk)
+        except Category.DoesNotExist:
+            return Response({'error': 'Category not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = CategorySerializer(category)
+        return Response(serializer.data)
+    
+    def update(self, request, pk, *args, **kwargs):
+        try:
+            category = Category.objects.get(pk=pk)
+        except Category.DoesNotExist:
+            return Response({'error': 'Category not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = CategorySerializer(category, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def destroy(self, request, pk, *args, **kwargs):
+        try:
+            category = Category.objects.get(pk=pk)
+            category.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Category.DoesNotExist:
+            return Response({'error': 'Category not found'}, status=status.HTTP_404_NOT_FOUND)  

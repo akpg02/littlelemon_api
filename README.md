@@ -22,6 +22,7 @@
    Users not assigned to a group will be considered customers.
 
 ## Using Postman or a similar application to access the following API endpoints
+
 ### User registration and token generation endpoints
 | Endpoint  | Role  | Method  | Purpose  |Sample Request Body |
 | :----------:  | :----------: | ----------: |:--------:| :-----------:| 
