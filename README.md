@@ -73,3 +73,13 @@
 | /api/orders/{orderId} | Manager | GET | Deletes this order | manager token in header
 | /api/orders | Delivery crew | GET | Returns all orders with order itmes assigned to the delivery crew | delivery crew token in header
 | /api/orders/{orderId} | Delivery crew | PATCH | A delivery crew can use this endpoint to update the order status to 0 or 1. The delivery crew will not be able to update anything else in this order | delivery crew token in header & {"status": 1}
+
+### Category endpoints
+| Endpoint     | Role         | Method      | Purpose  |Sample Request Body |
+| :----------  | :----------: | ----------: |:--------:| :-----------:| 
+| /api/categories/ | Customer | GET | Returns all the categories | user token in header
+| /api/categories/{categoryId} | Customer | GET | Returns a specific category | user token in header
+| /api/categories/ | Admin | POST | Creates a new category | admin token in header
+| /api/categories/{categoryId} | Admin | PUT | Updates a category | admin token in header
+| /api/categories/{categoryId} | Admin | DELETE | Deletes a category | admin token in header
+
