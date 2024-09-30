@@ -79,7 +79,7 @@
 | :----------  | :----------: | ----------: |:--------:| :-----------:| 
 | /api/categories/ | Customer | GET | Returns all the categories | user token in header
 | /api/categories/{categoryId} | Customer | GET | Returns a specific category | user token in header
-| /api/categories/ | Admin | POST | Creates a new category | admin token in header
-| /api/categories/{categoryId} | Admin | PUT | Updates a category | admin token in header
+| /api/categories/ | Admin | POST | Creates a new category | admin token in header; {"title":"Tests","slug":"tests"}
+| /api/categories/{categoryId} | Admin | PUT | Updates a category | admin token in header;  {"title":"Titles", "slug": "titles"}
 | /api/categories/{categoryId} | Admin | DELETE | Deletes a category | admin token in header
 
