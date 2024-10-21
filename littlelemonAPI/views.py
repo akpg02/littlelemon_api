@@ -1,4 +1,7 @@
 from django.shortcuts import get_object_or_404
+from rest_framework import filters
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.decorators import action
 from django.db.models import Q
 from rest_framework.response import Response
 from rest_framework import status, viewsets
@@ -7,12 +10,25 @@ from django.contrib.auth.models import User, Group
 from littlelemonAPI.models import MenuItem, Cart, Order, Category
 from littlelemonAPI.serializers import MenuItemSerializer, DeliveryCrewSerializer, ManagerSerializer, CartSerializer, OrderSerializer, CategorySerializer
 # Create your views here.
-class MenuItemViewSet(viewsets.ViewSet):
+class MenuItemViewSet(viewsets.ModelViewSet):
+    queryset = MenuItem.objects.all()
+    serializer_class = MenuItemSerializer
     permission_classes = [MenuItemsPermissions]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['featured']
+    ordering_fields =['price', 'title']
+    ordering = ['price']
+    
+    
     def list(self, request, *args, **kwargs):
-        query_set = MenuItem.objects.all()
-        serializer = MenuItemSerializer(query_set, many=True)
+        query_set = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(query_set)
+        if page is not None: 
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(query_set, many=True)
         return Response(serializer.data)
+    
     def retrieve(self, request, pk, *args, **kwargs):
         try:
             platform = MenuItem.objects.get(pk=pk)
@@ -141,26 +157,48 @@ class CartViewSet(viewsets.ViewSet):
         cart.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
-class OrderViewSet(viewsets.ViewSet):
+class OrderViewSet(viewsets.ModelViewSet):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
     permission_classes = [OrderPermissions]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['date', 'status', 'user', 'delivery_crew']
+    ordering_fields =['date', 'status', 'delivery_crew', 'total']
+    ordering = ['status']
+   
     
     def list(self, request, *args, **kwargs):
         user = request.user
         if user.groups.filter(name="manager").exists() or user.is_staff:
-            query_set = Order.objects.all()
-            serializer = OrderSerializer(query_set, many=True)
+            queryset = self.filter_queryset(self.get_queryset())
+            
+            page = self.paginate_queryset(queryset)
+            if page is not None:
+                serializer = self.get_serializer(page, many=True)
+                return self.get_paginated_response(serializer.data)
+            serializer = self.get_serializer(queryset, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         elif user.groups.filter(name="delivery_crew").exists() or user.is_staff:
             query_set = Order.objects.filter(~Q(delivery_crew__isnull=True))
+            
             if query_set.exists():
-                serializer = OrderSerializer(query_set, many=True)
+                page = self.paginate_queryset(query_set)
+                if page is not None:
+                    serializer = self.get_serializer(page, many=True)
+                    return self.get_paginated_response(serializer.data)  
+                serializer = self.get_serializer(query_set, many=True)
                 return Response(serializer.data, status=status.HTTP_200_OK)
         else: 
             # List all orders for the authenticated user
             query_set = Order.objects.filter(user=request.user)
             if not query_set.exists():
+                page = self.paginate_queryset(query_set)
+                if page is not None:
+                    serializer = self.get_serializer(page, many=True)
+                    return self.get_paginated_response(serializer.data)
                 return Response({'error': 'No orders found'}, status=status.HTTP_200_OK)
-            serializer = OrderSerializer(query_set, many=True)
+            
+            serializer = self.get_serializer(query_set, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
     
     def create(self, request):

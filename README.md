@@ -5,7 +5,7 @@
 4. python manage.py makemigrations
 5. python manage.py migrate
 6. Activate virtual environment:
-   - lemonenv/Scripts/activate
+   - menv/Scripts/activate
 7. python manage.py runserver
 
 ## Creating User groups in Django admin panel
@@ -43,7 +43,17 @@
 | /api/menu-items/{menuItem}/ | Manager | GET | List single menu item
 | /api/menu-items/{menuItem}/ | Manager | PUT, PATCH | Updates single menu item | PUT: { "title": "Cuban Sofrito Chicken Bowl","price": "15.00","featured": true,"category": 1 }, PATCH: { "price" : 20.00 }
 | /api/menu-items/{menuItem}/ | Manager | DELETE | Deletes menu item | 
-   
+
+### Pagination, Filter, Sort
+
+| Endpoints | Method | Capability |  Sample Endpoint |
+| :----------  | :----------: | ----------: |:--------:|
+| /api/menu-items | GET | Pagination | /api/menu-items/?page=2 | 
+| /api/menu-items | GET | Filter & Pagination | /api/menu-items/?featured=true&page=2 |
+| /api/menu-items | GET | Sort & Paginatian |/api/menu-items/?ordering=-price&page=2&price=-price |
+| /api/orders | GET | Pagnation | /api/orders?page=1 |
+| /api/orders | GET | Sort & Pagination | /api/orders/?ordering=-total&page=1
+| /api/orders | GET | Filter & Pagination | /api/orders?status=1&page=1|
 
 ### User group management endpoints
 | Endpoint     | Role         | Method      | Purpose  |Sample Request Body |
