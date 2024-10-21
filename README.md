@@ -19,7 +19,7 @@
    from the Django admin panel
       - Manager
       - Delivery crew
-   Users not assigned to a group will be considered customers.
+   - Users not assigned to a group will be considered customers.
 
 ## Using Postman or a similar application to access the following API endpoints
 
