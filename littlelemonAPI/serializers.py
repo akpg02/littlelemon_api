@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from littlelemonAPI.models import MenuItem, Category, Cart, OrderItem, Order
+from LittleLemonAPI.models import MenuItem, Category, Cart, OrderItem, Order
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:

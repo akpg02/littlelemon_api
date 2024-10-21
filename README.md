@@ -45,7 +45,6 @@
 | /api/menu-items/{menuItem}/ | Manager | DELETE | Deletes menu item | 
 
 ### Pagination, Filter, Sort
-
 | Endpoints | Method | Capability |  Sample Endpoint |
 | :----------  | :----------: | ----------: |:--------:|
 | /api/menu-items | GET | Pagination | /api/menu-items/?page=2 | 

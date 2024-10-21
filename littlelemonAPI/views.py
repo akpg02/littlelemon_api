@@ -7,16 +7,16 @@ from rest_framework.response import Response
 from rest_framework import status, viewsets
 from config.permissions import MenuItemsPermissions,ManageGroupPermissions, CartPermissions, OrderPermissions, CategoryPermissions
 from django.contrib.auth.models import User, Group
-from littlelemonAPI.models import MenuItem, Cart, Order, Category
-from littlelemonAPI.serializers import MenuItemSerializer, DeliveryCrewSerializer, ManagerSerializer, CartSerializer, OrderSerializer, CategorySerializer
+from LittleLemonAPI.models import MenuItem, Cart, Order, Category
+from LittleLemonAPI.serializers import MenuItemSerializer, DeliveryCrewSerializer, ManagerSerializer, CartSerializer, OrderSerializer, CategorySerializer
 # Create your views here.
 class MenuItemViewSet(viewsets.ModelViewSet):
     queryset = MenuItem.objects.all()
     serializer_class = MenuItemSerializer
     permission_classes = [MenuItemsPermissions]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['featured']
-    ordering_fields =['price', 'title']
+    filterset_fields = ['category', 'featured']
+    ordering_fields =['price', 'title' ]
     ordering = ['price']
     
     
@@ -227,18 +227,17 @@ class OrderViewSet(viewsets.ModelViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def retrieve(self, request, pk, *args, **kwargs):
+        print("Retrieving.....")
         try: 
             order = Order.objects.get(pk=pk)
+            print('this is order: ', order, )
             if order.user != request.user:
                 return Response({'error': 'You are not authorized to view this order'}, status=status.HTTP_403_FORBIDDEN)
         except Order.DoesNotExist:
             return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = OrderSerializer(order)
+        return Response(serializer.data)
         
-        serializer = OrderSerializer(order, data=request.data, partial=False)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def partial_update(self, request, pk, *args, **kwargs):
         # Handle partial updates to an order (PATCH requests)

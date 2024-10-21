@@ -1,5 +1,5 @@
 from django.contrib import admin
-from littlelemonAPI .models import Category, MenuItem, Cart, Order, OrderItem
+from LittleLemonAPI .models import Category, MenuItem, Cart, Order, OrderItem
 
 # Register your models here.
 admin.site.register(Category)
