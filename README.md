@@ -76,7 +76,7 @@
 | Endpoint     | Role         | Method      | Purpose  |Sample Request Body |
 | :----------  | :----------: | ----------: |:--------:| :-----------:| 
 | /api/orders/ | Customer | GET | Returns all the orders with order items created by this user | user token in header
-| /api/orders/ | Customer | POST | Creates a new order item for the current user. Gets current cart items from the cart endpoints and adds those items to the order items table. Then deletes all items from the cart for this user. | user token in header &  {"delivery_crew": null, "status": 0}
+| /api/orders/ | Customer | POST | Creates a new order item for the current user. Gets current cart items from the cart endpoints and adds those items to the order items table. Then deletes all items from the cart for this user. | user token in header 
 | /api/orders/{orderId}/ | Customer | GET | Returns all items for this order id. If the order ID doesn't belong to the current user, it displays an appropriate HTTP error status code. | user token in header
 | /api/orders/ | Manager | GET |Returns all orders with order items by all users | user token in header
 | /api/orders/{orderId} | Customer | PUT, PATCH | Updates the order. A manager can use this endpoint to set a delivery crew to this order, and also update the order status to 0 or 1. If a delivery crew is assigned to this order and status = 0, it means the order is out for delivery. If a delivery crew is assigned to this order adn status = 1, ite means the order has been delivered. | mananger token in header

@@ -166,7 +166,6 @@ class OrderViewSet(viewsets.ModelViewSet):
     ordering_fields =['date', 'status', 'delivery_crew', 'total']
     ordering = ['status']
    
-    
     def list(self, request, *args, **kwargs):
         user = request.user
         if user.groups.filter(name="manager").exists() or user.is_staff:
