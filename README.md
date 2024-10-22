@@ -49,6 +49,7 @@
 | :----------  | :----------: | ----------: |:--------:|
 | /api/menu-items | GET | Pagination | /api/menu-items/?page=2 | 
 | /api/menu-items | GET | Filter & Pagination | /api/menu-items/?featured=true&page=2 |
+| /api/menu-items | GET | Filter & Pagination | /api/menu-items/?category=4&page=1 |
 | /api/menu-items | GET | Sort & Paginatian |/api/menu-items/?ordering=-price&page=2&price=-price |
 | /api/orders | GET | Pagnation | /api/orders?page=1 |
 | /api/orders | GET | Sort & Pagination | /api/orders/?ordering=-total&page=1

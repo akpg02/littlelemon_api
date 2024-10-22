@@ -1,0 +1,24 @@
+Note: please use insomnia along with user tokens when accessing API endpoints. 
+Also, see README file for more information on endpoints.
+
+Login credentials: 
+    superuser: 
+        username: admin 
+        password: lemon@123!
+    
+    delivery_crew(s):
+        username: beth
+        password: lemon@123!
+    
+    manager(s): 
+        username: chris
+        password: lemon@123!
+    
+    customer(s): 
+        username: helen
+        password: lemon@123!
+
+        username: susan
+        password: lemon@123!
+    
+

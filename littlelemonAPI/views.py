@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import filters
+from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from django.db.models import Q
@@ -14,18 +14,28 @@ class MenuItemViewSet(viewsets.ModelViewSet):
     queryset = MenuItem.objects.all()
     serializer_class = MenuItemSerializer
     permission_classes = [MenuItemsPermissions]
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    search_fields = ['title','category']
     filterset_fields = ['category', 'featured']
     ordering_fields =['price', 'title' ]
     ordering = ['price']
     
     
     def list(self, request, *args, **kwargs):
-        query_set = self.filter_queryset(self.get_queryset())
+        search = request.query_params.get('search', None)
+        query_set = self.get_queryset()
+        
+        if search: 
+            query_set = query_set.filter(
+                Q(title__icontains=search) |
+                Q(category__title__icontains=search)
+            )
         page = self.paginate_queryset(query_set)
+        
         if page is not None: 
             serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)
+        
         serializer = self.get_serializer(query_set, many=True)
         return Response(serializer.data)
     
@@ -161,15 +171,23 @@ class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [OrderPermissions]
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_fields = ['date', 'status', 'user', 'delivery_crew']
+    search_fields = ['status', 'total', 'date']
     ordering_fields =['date', 'status', 'delivery_crew', 'total']
     ordering = ['status']
    
     def list(self, request, *args, **kwargs):
         user = request.user
         if user.groups.filter(name="manager").exists() or user.is_staff:
-            queryset = self.filter_queryset(self.get_queryset())
+            queryset = self.get_queryset()
+            search = request.query_params.get('search', None)
+            if search: 
+                queryset = queryset.filter(
+                    Q(status__icontains=search) | 
+                    Q(date__icontains=search) |
+                    Q(total__icontains=search) 
+                )
             
             page = self.paginate_queryset(queryset)
             if page is not None:
